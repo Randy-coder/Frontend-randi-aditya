@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Front End (Randi Aditya)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    select {
+      padding: 5px;
+      margin-bottom: 20px;
+    }
+    .post {
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Test Front End Developer (Randi Aditya)</h2>
+
+  <label for="countrySelect">Negara :</label>
+  <select id="CountrySelect">
+    <option value="">-- Pilih --</option>
+  </select><br>
+
+  <label for="harbourSelect">Pelabuhan :</label>
+  <select id="HarbourSelect">
+    <option value="">-- Pilih --</option>
+  </select><br>
+
+  <label for="GoodSelect">Barang :</label>
+  <select id="GoodSelect">
+    <option value="">-- Pilih --</option>
+  </select><br>
+
+  <label for="Disc">Discount :</label>
+  <input id="Disc" name="Disc" type="text" value="0" onKeyup="this.value=formatRupiah(this.value), hitungHarga();">%<br><br>
+
+  <label for="Harga">Harga :</label>
+  <input id="Harga" name="Harga" type="text" value="0" onKeyup='this.value=formatRupiah(this.value), hitungHarga();'><br><br>
+
+  <label for="Total">Total :</label>
+  <input id="Total" name="Total" type="text" readonly>
+
+  <div id="postsContainer"></div>
+
+  <script>
+    const CountrySelect = document.getElementById('CountrySelect');
+    const HarbourSelect = document.getElementById('HarbourSelect');
+    const GoodSelect = document.getElementById('GoodSelect');
+    const postsContainer = document.getElementById('postsContainer');
+
+    // Ambil daftar negara
+    fetch('http://202.157.176.100:3001/negaras')
+      .then(response => response.json())
+      .then(countrys => {
+        countrys.forEach(country => {
+          const option = document.createElement('option');
+          option.value = country.id_negara;
+          option.textContent = country.id_negara + ' - ' + country.nama_negara;
+          CountrySelect.appendChild(option);
+        });
+      });
+
+    // Event ketika combo box berubah
+    CountrySelect.addEventListener('change', () => {
+      const countryId = CountrySelect.value;
+      postsContainer.innerHTML = '';
+
+      if (countryId) {
+        fetch(`http://202.157.176.100:3001/pelabuhans?id_negara=${countryId}`)
+          .then(response => response.json())
+          .then(posts => {
+            HarbourSelect.innerHTML = '';
+            if (posts.length === 0) {
+              
+              return;
+            }
+            posts.forEach(post => {
+              
+            });
+
+            fetch(`http://202.157.176.100:3001/pelabuhans?id_negara=${countryId}`)
+            .then(response => response.json())
+            .then(harbours => {
+            harbours.forEach(harbour => {
+              const option = document.createElement('option');
+              option.value = harbour.id_pelabuhan;
+              option.textContent = harbour.id_pelabuhan + ' - ' + harbour.nama_pelabuhan;
+              HarbourSelect.appendChild(option);
+              });
+            });
+          });
+      }
+    });
+
+    HarbourSelect.addEventListener('change', () => {
+      const harbourId = HarbourSelect.value;
+      postsContainer.innerHTML = '';
+
+      if (harbourId) {
+        fetch(`http://202.157.176.100:3001/barangs?id_pelabuhan=${harbourId}`)
+          .then(response => response.json())
+          .then(posts => {
+            GoodSelect.innerHTML = '';
+            if (posts.length === 0) {
+              
+              return;
+            }
+            posts.forEach(post => {
+             
+            });
+
+            fetch(`http://202.157.176.100:3001/barangs?id_pelabuhan=${harbourId}`)
+            .then(response => response.json())
+            .then(goods => {
+              goods.forEach(good => {
+              const option = document.createElement('option');
+              option.value = good.id_barang;
+              option.textContent = good.id_barang + ' - ' + good.nama_barang;
+              GoodSelect.appendChild(option);
+            });
+          });
+          });
+      }
+    });
+
+  function formatRupiah(angka, prefix)
+  {
+    var number_string = angka.replace(/[^,\d]/g, '').toString(),
+        split   = number_string.split(','),
+        sisa    = split[0].length % 3,
+        rupiah  = split[0].substr(0, sisa),
+        ribuan  = split[0].substr(sisa).match(/\d{3}/gi);
+        
+    if (ribuan) {
+        separator = sisa ? '.' : '';
+        rupiah += separator + ribuan.join('.');
+    }
+    
+    rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+    return prefix == undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '');
+  }
+
+  function hitungHarga() {
+      const harga = parseFloat(document.getElementById("Harga").value.split(".").join("").split(",").join("."));
+      const diskon = parseFloat(document.getElementById("Disc").value.split(".").join("").split(",").join("."));
+
+      if (isNaN(diskon)) {
+        //alert("Masukkan angka yang valid!");
+        document.getElementById("Disc").value = 0;
+        document.getElementById("Total").value = 'Rp. ' + formatRupiah(harga.toFixed(0));
+        return;
+      }
+      else
+      {
+        const hargaSetelahDiskon = harga - (harga * (diskon / 100));
+        document.getElementById("Total").value = 'Rp. ' + formatRupiah(hargaSetelahDiskon.toFixed(0));
+      }
+
+      if (isNaN(harga)) {
+        //alert("Masukkan angka yang valid!");
+        document.getElementById("Harga").value = 0;
+        document.getElementById("Total").value = '';
+        return;
+      }
+      else
+      {
+        const hargaSetelahDiskon = harga - (harga * (diskon / 100));
+        document.getElementById("Total").value = 'Rp. ' + formatRupiah(hargaSetelahDiskon.toFixed(0));
+      }
+  }
+    
+  </script>
+
+</body>
+</html>
