@@ -161,7 +161,10 @@
 
     HarbourSelect.addEventListener('change', () => {
       const harbourId = HarbourSelect.value;
-      postsContainer.innerHTML = '';
+      document.getElementById('Disc').value = 0;
+      document.getElementById('Harga').value = 0;
+      document.getElementById('Total').value = 0;
+      document.getElementById('Deskrip').value = '';
 
       if (harbourId) {
         fetch(`http://202.157.176.100:3001/barangs?id_pelabuhan=${harbourId}`)
