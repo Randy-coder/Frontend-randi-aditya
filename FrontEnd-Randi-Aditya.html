@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Test Front End (Randi Aditya)</title>
@@ -8,45 +9,89 @@
       font-family: Arial, sans-serif;
       padding: 20px;
     }
-    select {
-      padding: 5px;
-      margin-bottom: 20px;
+
+    .form-group {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
     }
+
+    label {
+      width: 100px;
+      text-align: right;
+      margin-right: 10px;
+    }
+
+    select,
+    input[type="text"],
+    textarea {
+      padding: 5px;
+      width: 200px;
+    }
+
+    textarea {
+      resize: none;
+      height: 90px;
+    }
+
     .post {
       border: 1px solid #ccc;
       margin-bottom: 10px;
       padding: 10px;
       border-radius: 5px;
     }
+
+    #postsContainer {
+      margin-top: 20px;
+    }
   </style>
 </head>
+
 <body>
 
   <h2>Test Front End Developer (Randi Aditya)</h2>
 
-  <label for="countrySelect">Negara :</label>
-  <select id="CountrySelect">
-    <option value="">-- Pilih --</option>
-  </select><br>
+  <div class="form-group">
+    <label for="CountrySelect">Negara :</label>
+    <select id="CountrySelect">
+      <option value="">-- Pilih --</option>
+    </select>
+  </div>
 
-  <label for="harbourSelect">Pelabuhan :</label>
-  <select id="HarbourSelect">
-    <option value="">-- Pilih --</option>
-  </select><br>
+  <div class="form-group">
+    <label for="HarbourSelect">Pelabuhan :</label>
+    <select id="HarbourSelect">
+      <option value="">-- Pilih --</option>
+    </select>
+  </div>
 
-  <label for="GoodSelect">Barang :</label>
-  <select id="GoodSelect">
-    <option value="">-- Pilih --</option>
-  </select><br>
+  <div class="form-group">
+    <label for="GoodSelect">Barang :</label>
+    <select id="GoodSelect">
+      <option value="">-- Pilih --</option>
+    </select>
+  </div>
 
-  <label for="Disc">Discount :</label>
-  <input id="Disc" name="Disc" type="text" value="0" onKeyup="this.value=formatRupiah(this.value), hitungHarga();">%<br><br>
+  <div class="form-group">
+    <label for="Deskrip"></label>
+    <textarea id="Deskrip" readonly></textarea>
+  </div>
 
-  <label for="Harga">Harga :</label>
-  <input id="Harga" name="Harga" type="text" value="0" onKeyup='this.value=formatRupiah(this.value), hitungHarga();'><br><br>
+  <div class="form-group">
+    <label for="Disc">Discount :</label>
+    <input id="Disc" name="Disc" type="text" value="0" maxlength="3" style="max-width: 30px;"
+      onkeyup="this.value=formatRupiah(this.value); hitungHarga();"> %
+  </div>
 
-  <label for="Total">Total :</label>
-  <input id="Total" name="Total" type="text" readonly>
+  <div class="form-group">
+    <label for="Harga">Harga :</label>
+    <input id="Harga" name="Harga" type="text" value="0" onkeyup="this.value=formatRupiah(this.value); hitungHarga();">
+  </div>
+
+  <div class="form-group">
+    <label for="Total">Total :</label>
+    <input id="Total" name="Total" type="text" readonly>
+  </div>
 
   <div id="postsContainer"></div>
 
@@ -71,7 +116,7 @@
     // Event ketika combo box berubah
     CountrySelect.addEventListener('change', () => {
       const countryId = CountrySelect.value;
-      postsContainer.innerHTML = '';
+      //postsContainer.innerHTML = '';
 
       if (countryId) {
         fetch(`http://202.157.176.100:3001/pelabuhans?id_negara=${countryId}`)
@@ -79,23 +124,26 @@
           .then(posts => {
             HarbourSelect.innerHTML = '';
             if (posts.length === 0) {
-              
+
               return;
             }
             posts.forEach(post => {
-              
+
             });
 
+            HarbourSelect.innerHTML = '<option value="">-- Pilih --</option>';
+            GoodSelect.innerHTML = '<option value="">-- Pilih --</option>';
+
             fetch(`http://202.157.176.100:3001/pelabuhans?id_negara=${countryId}`)
-            .then(response => response.json())
-            .then(harbours => {
-            harbours.forEach(harbour => {
-              const option = document.createElement('option');
-              option.value = harbour.id_pelabuhan;
-              option.textContent = harbour.id_pelabuhan + ' - ' + harbour.nama_pelabuhan;
-              HarbourSelect.appendChild(option);
+              .then(response => response.json())
+              .then(harbours => {
+                harbours.forEach(harbour => {
+                  const option = document.createElement('option');
+                  option.value = harbour.id_pelabuhan;
+                  option.textContent = harbour.id_pelabuhan + ' - ' + harbour.nama_pelabuhan;
+                  HarbourSelect.appendChild(option);
+                });
               });
-            });
           });
       }
     });
@@ -110,45 +158,63 @@
           .then(posts => {
             GoodSelect.innerHTML = '';
             if (posts.length === 0) {
-              
+
               return;
             }
             posts.forEach(post => {
-             
+
             });
 
+            GoodSelect.innerHTML = '<option value="">-- Pilih --</option>';
+
             fetch(`http://202.157.176.100:3001/barangs?id_pelabuhan=${harbourId}`)
-            .then(response => response.json())
-            .then(goods => {
-              goods.forEach(good => {
-              const option = document.createElement('option');
-              option.value = good.id_barang;
-              option.textContent = good.id_barang + ' - ' + good.nama_barang;
-              GoodSelect.appendChild(option);
+              .then(response => response.json())
+              .then(goods => {
+                goods.forEach(good => {
+                  const option = document.createElement('option');
+                  option.value = good.id_barang;
+                  option.textContent = good.id_barang + ' - ' + good.nama_barang;
+                  option.dataset.deskripsi = good.description;
+                  option.dataset.diskon = good.diskon;
+                  option.dataset.harga = good.harga;
+                  GoodSelect.appendChild(option);
+                });
+
+              });
+
+            GoodSelect.addEventListener('change', function () {
+              const selectedOption = this.options[this.selectedIndex];
+              const harga = selectedOption.dataset.harga;
+              const diskon = selectedOption.dataset.diskon;
+              const deskripsi = selectedOption.dataset.deskripsi;
+
+              document.getElementById('Disc').value = formatRupiah(diskon);
+              document.getElementById('Harga').value = formatRupiah(harga);
+              document.getElementById('Deskrip').value = deskripsi;
+              hitungHarga();
             });
-          });
+
           });
       }
     });
 
-  function formatRupiah(angka, prefix)
-  {
-    var number_string = angka.replace(/[^,\d]/g, '').toString(),
-        split   = number_string.split(','),
-        sisa    = split[0].length % 3,
-        rupiah  = split[0].substr(0, sisa),
-        ribuan  = split[0].substr(sisa).match(/\d{3}/gi);
-        
-    if (ribuan) {
+    function formatRupiah(angka, prefix) {
+      var number_string = angka.replace(/[^,\d]/g, '').toString(),
+        split = number_string.split(','),
+        sisa = split[0].length % 3,
+        rupiah = split[0].substr(0, sisa),
+        ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+      if (ribuan) {
         separator = sisa ? '.' : '';
         rupiah += separator + ribuan.join('.');
-    }
-    
-    rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
-    return prefix == undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '');
-  }
+      }
 
-  function hitungHarga() {
+      rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+      return prefix == undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '');
+    }
+
+    function hitungHarga() {
       const harga = parseFloat(document.getElementById("Harga").value.split(".").join("").split(",").join("."));
       const diskon = parseFloat(document.getElementById("Disc").value.split(".").join("").split(",").join("."));
 
@@ -158,8 +224,7 @@
         document.getElementById("Total").value = 'Rp. ' + formatRupiah(harga.toFixed(0));
         return;
       }
-      else
-      {
+      else {
         const hargaSetelahDiskon = harga - (harga * (diskon / 100));
         document.getElementById("Total").value = 'Rp. ' + formatRupiah(hargaSetelahDiskon.toFixed(0));
       }
@@ -170,14 +235,14 @@
         document.getElementById("Total").value = '';
         return;
       }
-      else
-      {
+      else {
         const hargaSetelahDiskon = harga - (harga * (diskon / 100));
         document.getElementById("Total").value = 'Rp. ' + formatRupiah(hargaSetelahDiskon.toFixed(0));
       }
-  }
-    
+    }
+
   </script>
 
 </body>
+
 </html>
