@@ -116,20 +116,23 @@
     // Event ketika combo box berubah
     CountrySelect.addEventListener('change', () => {
       const countryId = CountrySelect.value;
-      //postsContainer.innerHTML = '';
+      document.getElementById('Disc').value = 0;
+      document.getElementById('Harga').value = 0;
+      document.getElementById('Total').value = 0;
+      document.getElementById('Deskrip').value = '';
 
       if (countryId) {
         fetch(`http://202.157.176.100:3001/pelabuhans?id_negara=${countryId}`)
           .then(response => response.json())
           .then(posts => {
             HarbourSelect.innerHTML = '';
-            if (posts.length === 0) {
+            /*if (posts.length === 0) {
 
               return;
             }
             posts.forEach(post => {
 
-            });
+            });*/
 
             HarbourSelect.innerHTML = '<option value="">-- Pilih --</option>';
             GoodSelect.innerHTML = '<option value="">-- Pilih --</option>';
@@ -146,6 +149,14 @@
               });
           });
       }
+      if (CountrySelect.selectedIndex === 0) {
+        HarbourSelect.innerHTML = '<option value="">-- Pilih --</option>';
+        GoodSelect.innerHTML = '<option value="">-- Pilih --</option>';
+        document.getElementById('Disc').value = 0;
+        document.getElementById('Harga').value = 0;
+        document.getElementById('Total').value = 0;
+        document.getElementById('Deskrip').value = '';
+      }
     });
 
     HarbourSelect.addEventListener('change', () => {
@@ -157,13 +168,13 @@
           .then(response => response.json())
           .then(posts => {
             GoodSelect.innerHTML = '';
-            if (posts.length === 0) {
+            /*if (posts.length === 0) {
 
               return;
             }
             posts.forEach(post => {
 
-            });
+            });*/
 
             GoodSelect.innerHTML = '<option value="">-- Pilih --</option>';
 
@@ -188,13 +199,28 @@
               const diskon = selectedOption.dataset.diskon;
               const deskripsi = selectedOption.dataset.deskripsi;
 
-              document.getElementById('Disc').value = formatRupiah(diskon);
-              document.getElementById('Harga').value = formatRupiah(harga);
-              document.getElementById('Deskrip').value = deskripsi;
-              hitungHarga();
+              if (GoodSelect.selectedIndex === 0) {
+                document.getElementById('Disc').value = 0;
+                document.getElementById('Harga').value = 0;
+                document.getElementById('Total').value = 0;
+                document.getElementById('Deskrip').value = '';
+              }
+              else {
+                document.getElementById('Disc').value = formatRupiah(diskon);
+                document.getElementById('Harga').value = formatRupiah(harga);
+                document.getElementById('Deskrip').value = deskripsi;
+                hitungHarga();
+              }
             });
 
           });
+      }
+      if (HarbourSelect.selectedIndex === 0) {
+        GoodSelect.innerHTML = '<option value="">-- Pilih --</option>';
+        document.getElementById('Disc').value = 0;
+        document.getElementById('Harga').value = 0;
+        document.getElementById('Total').value = 0;
+        document.getElementById('Deskrip').value = '';
       }
     });
 
