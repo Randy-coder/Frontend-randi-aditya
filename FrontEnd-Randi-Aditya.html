@@ -93,13 +93,10 @@
     <input id="Total" name="Total" type="text" readonly>
   </div>
 
-  <div id="postsContainer"></div>
-
   <script>
     const CountrySelect = document.getElementById('CountrySelect');
     const HarbourSelect = document.getElementById('HarbourSelect');
     const GoodSelect = document.getElementById('GoodSelect');
-    const postsContainer = document.getElementById('postsContainer');
 
     // Ambil daftar negara
     fetch('http://202.157.176.100:3001/negaras')
@@ -122,31 +119,22 @@
       document.getElementById('Deskrip').value = '';
 
       if (countryId) {
-        fetch(`http://202.157.176.100:3001/pelabuhans?id_negara=${countryId}`)
+        fetch(`http://202.157.176.100:3001/pelabuhans?filter={"where" : {"id_negara":${countryId}}}`)
           .then(response => response.json())
-          .then(posts => {
+          .then(harbours => {
             HarbourSelect.innerHTML = '';
-            /*if (posts.length === 0) {
-
-              return;
-            }
-            posts.forEach(post => {
-
-            });*/
-
             HarbourSelect.innerHTML = '<option value="">-- Pilih --</option>';
             GoodSelect.innerHTML = '<option value="">-- Pilih --</option>';
-
-            fetch(`http://202.157.176.100:3001/pelabuhans?id_negara=${countryId}`)
-              .then(response => response.json())
-              .then(harbours => {
-                harbours.forEach(harbour => {
-                  const option = document.createElement('option');
-                  option.value = harbour.id_pelabuhan;
-                  option.textContent = harbour.id_pelabuhan + ' - ' + harbour.nama_pelabuhan;
-                  HarbourSelect.appendChild(option);
-                });
-              });
+            if (harbours.length === 0) {
+              alert("Data Kosong");
+              return;
+            }
+            harbours.forEach(harbour => {
+              const option = document.createElement('option');
+              option.value = harbour.id_pelabuhan;
+              option.textContent = harbour.id_pelabuhan + ' - ' + harbour.nama_pelabuhan;
+              HarbourSelect.appendChild(option);
+            });
           });
       }
       if (CountrySelect.selectedIndex === 0) {
@@ -167,34 +155,24 @@
       document.getElementById('Deskrip').value = '';
 
       if (harbourId) {
-        fetch(`http://202.157.176.100:3001/barangs?id_pelabuhan=${harbourId}`)
+        fetch(`http://202.157.176.100:3001/barangs?filter={"where" : {"id_pelabuhan":${harbourId}}}`)
           .then(response => response.json())
-          .then(posts => {
+          .then(goods => {
             GoodSelect.innerHTML = '';
-            /*if (posts.length === 0) {
-
+            GoodSelect.innerHTML = '<option value="">-- Pilih --</option>';
+            if (goods.length === 0) {
+              alert("Data Kosong");
               return;
             }
-            posts.forEach(post => {
-
-            });*/
-
-            GoodSelect.innerHTML = '<option value="">-- Pilih --</option>';
-
-            fetch(`http://202.157.176.100:3001/barangs?id_pelabuhan=${harbourId}`)
-              .then(response => response.json())
-              .then(goods => {
-                goods.forEach(good => {
-                  const option = document.createElement('option');
-                  option.value = good.id_barang;
-                  option.textContent = good.id_barang + ' - ' + good.nama_barang;
-                  option.dataset.deskripsi = good.description;
-                  option.dataset.diskon = good.diskon;
-                  option.dataset.harga = good.harga;
-                  GoodSelect.appendChild(option);
-                });
-
-              });
+            goods.forEach(good => {
+              const option = document.createElement('option');
+              option.value = good.id_barang;
+              option.textContent = good.id_barang + ' - ' + good.nama_barang;
+              option.dataset.deskripsi = good.description;
+              option.dataset.diskon = good.diskon;
+              option.dataset.harga = good.harga;
+              GoodSelect.appendChild(option);
+            });
 
             GoodSelect.addEventListener('change', function () {
               const selectedOption = this.options[this.selectedIndex];
